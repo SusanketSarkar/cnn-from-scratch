@@ -42,7 +42,7 @@ class CNN:
                 # Update weights using optimizer
                 self.optimizer.update(layer, dW, db)
                 # Update A_prev for next iteration
-                A_prev = self.layers[i-1].A if i > 0 else x
+                # A_prev = self.layers[i-1].A if i > 0 else x
                 
             elif isinstance(layer, conv):
                 # Convolutional layer backward pass

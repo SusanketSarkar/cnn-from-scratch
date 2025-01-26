@@ -1,5 +1,6 @@
 import numpy as np
 from activation import ReLU, Sigmoid
+import tensorflow as tf
 
 class conv:
     def __init__(self, input_channels : int = 1, filter : int = 32, kernel_size : tuple = (3, 3), stride : int = 2, padding : int = 0, activation : object = ReLU()):
@@ -154,7 +155,7 @@ class flatten:
         return x.reshape(x.shape[0], -1)
     
     def backward(self, grad_output):
-        return grad_output.reshape(self.input.shape)
+        return tf.reshape(grad_output, self.input.shape)
     
 
 class dense:
@@ -170,9 +171,18 @@ class dense:
         return self.A
     
     def backward(self, dA, A_p):
-        m = A_p.shape[1]  # batch size
+        m = A_p.shape[0]  # batch size
+        
+        # Ensure shapes are compatible
+        if len(dA.shape) == 1:
+            dA = tf.expand_dims(dA, axis=1)  # Add dimension to make it [batch_size, 1]
+        
+        # Ensure A_p is properly shaped
+        if len(A_p.shape) > 2:
+            A_p = tf.reshape(A_p, [m, -1])  # Flatten to [batch_size, features]
+            
         dZ = dA * self.activation.prime_function(self.Z)
-        dW = (1/m) * np.dot(dZ, A_p.T)  # Added normalization
-        db = (1/m) * np.sum(dZ, axis=1, keepdims=True)  # Added normalization
-        dA_prev = np.dot(self.weights.T, dZ)
-        return dA_prev, dW, db
+        dW = (1/m) * tf.matmul(dZ, tf.transpose(A_p))
+        db = (1/m) * tf.reduce_sum(dZ, axis=0, keepdims=True)
+        
+        return dZ, dW, db
