@@ -1,5 +1,3 @@
-Here's a project description:
-
 # CNN Implementation from Scratch using TensorFlow
 
 This project implements a Convolutional Neural Network (CNN) framework from scratch using TensorFlow's low-level operations. While frameworks like Keras provide high-level APIs for neural networks, this implementation helps understand the internal workings of CNNs by building each component manually.
